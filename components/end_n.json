@@ -1,0 +1,18 @@
+{
+	"id":"end_n",
+	"width":320,
+	"height":64,
+	"map":[
+		[1, 1, 1, 1, 1]
+	],
+	"nodes":[
+		{
+			"id":0,
+			"tag":"exit",
+			"x":160,
+			"y":0,
+			"direction":"north",
+			"paired":false
+		}
+	]
+}
