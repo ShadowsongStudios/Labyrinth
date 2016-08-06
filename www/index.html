@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Labyrinth</title>
+
+		<link href='https://fonts.googleapis.com/css?family=Open+Sans|Cinzel:400,700' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" type="text/css" href="style/style.css" />
+
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.0.0/jquery.min.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="./js/lib/pixi/pixi.js"></script>
+
+		<!-- GAME SCREENS -->
+		<script src="./js/screens/loading.js"></script>
+		<script src="./js/screens/charsel.js"></script>
+		<script src="./js/screens/charcreate.js"></script>
+		<script src="./js/screens/dungeon.js"></script>
+
+		<script src="./js/armor.js"></script>
+		<script src="./js/button.js"></script>
+		<script src="./js/camera.js"></script>
+		<script src="./js/character.js"></script>
+		<script src="./js/enums.js"></script>
+		<script src="./js/keyboard.js"></script>
+		<script src="./js/main.js"></script>
+		<script src="./js/mouse.js"></script>
+	</head>
+	<body>
+		<div id="login-logo" class="login-ui">
+			<!--<img src="./image/logo.png" alt="Labyrinth Logo" />-->
+		</div>
+		<div id="login-form" class="login-ui">
+			<label for="username">Username</label>
+			<input type="text" id="username" autocomplete="off" />
+
+			<label for="password">Password</label>
+			<input type="password" id="password" />
+
+			<input type="button" id="login-button" value="Login" />
+		</div>
+
+		<input type="text" style="z-index:0; position:absolute; top:50%; left:50%;" id="capture" />
+	</body>
+</html>
