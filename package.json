@@ -1,11 +1,16 @@
 {
-  "name": "labyrinth-server",
-  "version": "0.0.1",
-  "description": "Server for labyrinth game",
-  "dependencies": {
-    "express": "^4.10.2",
-    "js-scrypt": "^0.2.0",
-    "socket.io": "^1.4.8",
-    "sqlite3": "^3.1.4"
-  }
+	"name": "labyrinth-server",
+	"version": "0.0.1",
+	"description": "Server for labyrinth game",
+	"dependencies": {
+		"express": "^4.10.2",
+		"extend": "^3.0.0",
+		"jquery": "^3.1.0",
+		"js-scrypt": "^0.2.0",
+		"socket.io": "^1.4.8",
+		"sqlite3": "^3.1.4"
+	},
+	"scripts": {
+		"start":"node server.js"
+	}
 }
