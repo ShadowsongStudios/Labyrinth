@@ -90,29 +90,27 @@ function Character(x, y, screen, name, charClass, gender, skin, hair_style, hair
 		switch(self.dir) {
 			case Direction.Up:
 				if(self.anim != self.anim_prev) self.frame = 0;
-				if(moving) {
-					self.anim = Animation.Walk.Up;
-				}
-				else if(attacking) self.anim = Animation.Attack.Up;
-				else self.anim = Animation.Stand.Up;
+				if(moving) self.setAnim(Animation.Walk.Up);
+				else if(attacking) self.setAnim(Animation.Attack.Up);
+				else self.setAnim(Animation.Stand.Up);
 				break;
 			case Direction.Right:
 				if(self.anim != self.anim_prev) self.frame = 0;
-				if(moving) self.anim = Animation.Walk.Right;
-				else if(attacking) self.anim = Animation.Attack.Right;
-				else self.anim = Animation.Stand.Right;
+				if(moving) self.setAnim(Animation.Walk.Right);
+				else if(attacking) self.setAnim(Animation.Attack.Right);
+				else self.setAnim(Animation.Stand.Right);
 				break;
 			case Direction.Down:
 				if(self.anim != self.anim_prev) self.frame = 0;
-				if(moving) self.anim = Animation.Walk.Down;
-				else if(attacking) self.anim = Animation.Attack.Down;
-				else self.anim = Animation.Stand.Down;
+				if(moving) self.setAnim(Animation.Walk.Down);
+				else if(attacking) self.setAnim(Animation.Attack.Down);
+				else self.setAnim(Animation.Stand.Down);
 				break;
 			case Direction.Left:
 				if(self.anim != self.anim_prev) self.frame = 0;
-				if(moving) self.anim = Animation.Walk.Left;
-				else if(attacking) self.anim = Animation.Attack.Left;
-				else self.anim = Animation.Stand.Left;
+				if(moving) self.setAnim(Animation.Walk.Left);
+				else if(attacking) self.setAnim(Animation.Attack.Left);
+				else self.setAnim(Animation.Stand.Left);
 		}
 
 		if(self.anim_cur_delay <= 0) {
