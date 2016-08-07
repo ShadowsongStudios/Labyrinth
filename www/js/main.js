@@ -1,3 +1,5 @@
+var FPS = 60;
+
 var renderer;
 var stage;
 var state;
