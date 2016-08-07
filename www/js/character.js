@@ -34,7 +34,8 @@ function Character(x, y, screen, name, charClass, gender, skin, hair_style, hair
 	this.anim_cur_delay = this.anim_delay;
 	this.anim_end = function() {};
 
-	this.attack_max_delay = 1 * FPS; // Test variable, will move to weapon class
+	this.attacking = false;
+	this.attack_max_delay = 0.25 * FPS; // Test variable, will move to weapon class
 	this.attack_cur_delay = this.attack_max_delay;
 
 	this.buildSprite = function() {
@@ -79,10 +80,9 @@ function Character(x, y, screen, name, charClass, gender, skin, hair_style, hair
 	this.update = function() {
 		var moving = false;
 
-		var attacking;
 		if(!self.paralyzed) {
-			attacking = self.handleAttack();
-			if(!attacking) {
+			if(!self.attacking) self.attacking = self.handleAttack();
+			if(!self.attacking) {
 				moving = self.handleMovement();
 			}
 		}
@@ -90,29 +90,27 @@ function Character(x, y, screen, name, charClass, gender, skin, hair_style, hair
 		switch(self.dir) {
 			case Direction.Up:
 				if(self.anim != self.anim_prev) self.frame = 0;
-				if(moving) {
-					self.anim = Animation.Walk.Up;
-				}
-				else if(attacking) self.anim = Animation.Attack.Up;
-				else self.anim = Animation.Stand.Up;
+				if(moving) self.setAnim(Animation.Walk.Up);
+				else if(self.attacking) self.setAnim(Animation.Attack.Up);
+				else self.setAnim(Animation.Stand.Up);
 				break;
 			case Direction.Right:
 				if(self.anim != self.anim_prev) self.frame = 0;
-				if(moving) self.anim = Animation.Walk.Right;
-				else if(attacking) self.anim = Animation.Attack.Right;
-				else self.anim = Animation.Stand.Right;
+				if(moving) self.setAnim(Animation.Walk.Right);
+				else if(self.attacking) self.setAnim(Animation.Attack.Right);
+				else self.setAnim(Animation.Stand.Right);
 				break;
 			case Direction.Down:
 				if(self.anim != self.anim_prev) self.frame = 0;
-				if(moving) self.anim = Animation.Walk.Down;
-				else if(attacking) self.anim = Animation.Attack.Down;
-				else self.anim = Animation.Stand.Down;
+				if(moving) self.setAnim(Animation.Walk.Down);
+				else if(self.attacking) self.setAnim(Animation.Attack.Down);
+				else self.setAnim(Animation.Stand.Down);
 				break;
 			case Direction.Left:
 				if(self.anim != self.anim_prev) self.frame = 0;
-				if(moving) self.anim = Animation.Walk.Left;
-				else if(attacking) self.anim = Animation.Attack.Left;
-				else self.anim = Animation.Stand.Left;
+				if(moving) self.setAnim(Animation.Walk.Left);
+				else if(self.attacking) self.setAnim(Animation.Attack.Left);
+				else self.setAnim(Animation.Stand.Left);
 		}
 
 		if(self.anim_cur_delay <= 0) {
@@ -178,9 +176,15 @@ function Character(x, y, screen, name, charClass, gender, skin, hair_style, hair
 			return false;
 		}
 
-		if(mouse.State.Left && !mouse.Prev.Left) { // If clicking
+		if(mouse.State.Left) { // If clicking
 			self.attack_cur_delay = self.attack_max_delay;
-			self.anim_end = function() {};
+
+			self.anim_frame = 0;
+			self.anim_cur_delay = 0;
+
+			self.anim_end = function() {
+				self.attacking = false;
+			};
 			return true;
 		}
 
