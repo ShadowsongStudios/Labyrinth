@@ -28,11 +28,21 @@ function Character(x, y, screen, name, charClass, gender, skin, hair_style, hair
 	this.slot_legs = null;
 
 	this.anim = Animation.Walk.Left;
+	this.anim_prev = Animation.Walk.Left;
 	this.anim_frame = 0;
-	this.anim_delay = 60 / 10;
+	this.anim_delay = 0.1 * FPS;
 	this.anim_cur_delay = this.anim_delay;
+	this.anim_end = function() {};
 
-	this.anim_attack = true;
+	this.attacking = false;
+	this.attack_max_delay = 0.25 * FPS; // Test variable, will move to weapon class
+	this.attack_cur_delay = this.attack_max_delay;
+
+	this.dodging = false;
+	this.dodge_cur_dist = 0;
+	this.dodge_max_dist = 70;
+	this.dodge_max_delay = 1 * FPS;
+	this.dodge_cur_delay = this.dodge_max_delay;
 
 	this.buildSprite = function() {
 		self.bodySprite = new PIXI.Sprite(PIXI.loader.resources["body_" + self.gender + "_" + self.skin].texture);
@@ -77,31 +87,37 @@ function Character(x, y, screen, name, charClass, gender, skin, hair_style, hair
 		var moving = false;
 
 		if(!self.paralyzed) {
-			if(!self.handleAttack()) {
+			if(!self.dodging) self.dodging = self.handleDodge();
+			if(!self.attacking) self.attacking = self.handleAttack();
+			if(!self.attacking) {
 				moving = self.handleMovement();
 			}
 		}
 
 		switch(self.dir) {
 			case Direction.Up:
-				if(self.anim != Animation.Walk.Up) self.frame = 0;
-				if(moving) self.anim = Animation.Walk.Up;
-				else self.anim = Animation.Stand.Up;
+				if(self.anim != self.anim_prev) self.frame = 0;
+				if(moving) self.setAnim(Animation.Walk.Up);
+				else if(self.attacking) self.setAnim(Animation.Attack.Up);
+				else self.setAnim(Animation.Stand.Up);
 				break;
 			case Direction.Right:
-				if(self.anim != Animation.Walk.Right) self.frame = 0;
-				if(moving) self.anim = Animation.Walk.Right;
-				else self.anim = Animation.Stand.Right;
+				if(self.anim != self.anim_prev) self.frame = 0;
+				if(moving) self.setAnim(Animation.Walk.Right);
+				else if(self.attacking) self.setAnim(Animation.Attack.Right);
+				else self.setAnim(Animation.Stand.Right);
 				break;
 			case Direction.Down:
-				if(self.anim != Animation.Walk.Down) self.frame = 0;
-				if(moving) self.anim = Animation.Walk.Down;
-				else self.anim = Animation.Stand.Down;
+				if(self.anim != self.anim_prev) self.frame = 0;
+				if(moving) self.setAnim(Animation.Walk.Down);
+				else if(self.attacking) self.setAnim(Animation.Attack.Down);
+				else self.setAnim(Animation.Stand.Down);
 				break;
 			case Direction.Left:
-				if(self.anim != Animation.Walk.Left) self.frame = 0;
-				if(moving) self.anim = Animation.Walk.Left;
-				else self.anim = Animation.Stand.Left;
+				if(self.anim != self.anim_prev) self.frame = 0;
+				if(moving) self.setAnim(Animation.Walk.Left);
+				else if(self.attacking) self.setAnim(Animation.Attack.Left);
+				else self.setAnim(Animation.Stand.Left);
 		}
 
 		if(self.anim_cur_delay <= 0) {
@@ -110,6 +126,7 @@ function Character(x, y, screen, name, charClass, gender, skin, hair_style, hair
 			if(self.anim_frame >= self.anim.frames) {
 				self.anim_frame = 0;
 				if(self.anim == Animation.Walk.Up || self.anim == Animation.Walk.Right || self.anim == Animation.Walk.Down || self.anim == Animation.Walk.Left) self.anim_frame = 1;
+				self.anim_end();
 			}
 
 			self.updateSprites();
@@ -151,16 +168,61 @@ function Character(x, y, screen, name, charClass, gender, skin, hair_style, hair
 			self.vx /= abs_m;
 			self.vy /= abs_m;
 
+			// If dodging, boost speed
+			var speed = self.speed;
+			if(self.dodging) {
+				speed = 10;
+				self.dodge_cur_dist += 10;
+
+				if(self.dodge_cur_dist >= self.dodge_max_dist) {
+					self.dodge_cur_dist = 0;
+					self.dodging = false;
+					self.dodge_cur_delay = self.dodge_max_delay;
+				}
+			}
+
 			// Apply movement vector * speed to position
-			self.render.x += self.vx * self.speed;
-			self.render.y += self.vy * self.speed;
+			self.render.x += self.vx * speed;
+			self.render.y += self.vy * speed;
 		}
 
+		self.anim_end = function() {};
 		return moving;
 	};
 
 	self.handleAttack = function() {
-		
+		if(self.attack_cur_delay > 0) { // Too soon to attack again
+			self.attack_cur_delay--;
+			return false;
+		}
+
+		if(mouse.State.Left) { // If clicking
+			self.attack_cur_delay = self.attack_max_delay;
+
+			self.anim_frame = 0;
+			self.anim_cur_delay = 0;
+
+			self.anim_end = function() {
+				self.attacking = false;
+			};
+			return true;
+		}
+
+		return false;
+	};
+
+	self.handleDodge = function() {
+		if(self.dodge_cur_delay <= 0 && (keyboard.State[Keys.LShift] && !keyboard.Prev[Keys.LShift])) {
+			return true;
+		} else {
+			if(self.dodge_cur_delay > 0) self.dodge_cur_delay--;
+			return false;
+		}
+	};
+
+	self.setAnim = function(anim) {
+		self.anim_prev = self.anim;
+		self.anim = anim;
 	};
 
 	self.setGender = function(gender) {

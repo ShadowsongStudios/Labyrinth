@@ -44,10 +44,6 @@ app.get('/', function(req, res) {
 io.on('connection', function(socket) {
 	console.log("a user connected");
 
-	scrypt.hash("testing", "testing", function(err, res) {
-		console.log(res.toString("hex"));
-	})
-
 	socket.on('login_attempt', function(data) {
 		if(data.pass == '' || data.user == '') {
 			socket.emit('login_attempt', { success:false });
